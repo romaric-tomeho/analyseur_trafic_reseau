@@ -1,0 +1,55 @@
+{
+    "noeuds": [
+        {
+            "node_id": "R1",
+            "node_type": "router",
+            "capacite": 5
+        },
+        {
+            "node_id": "R2",
+            "node_type": "router",
+            "capacite": 5
+        },
+        {
+            "node_id": "S1",
+            "node_type": "switch",
+            "capacite": 10
+        },
+        {
+            "node_id": "PC1",
+            "node_type": "host",
+            "capacite": 3
+        },
+        {
+            "node_id": "PC2",
+            "node_type": "host",
+            "capacite": 3
+        }
+    ],
+    "liens": [
+        {
+            "source": "PC1",
+            "destination": "S1",
+            "bande_passante": 100,
+            "latence": 2
+        },
+        {
+            "source": "S1",
+            "destination": "R1",
+            "bande_passante": 100,
+            "latence": 5
+        },
+        {
+            "source": "R1",
+            "destination": "R2",
+            "bande_passante": 50,
+            "latence": 10
+        },
+        {
+            "source": "R2",
+            "destination": "PC2",
+            "bande_passante": 100,
+            "latence": 2
+        }
+    ]
+}
