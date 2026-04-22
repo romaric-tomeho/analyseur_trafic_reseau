@@ -12,10 +12,16 @@ class DijkstraRouter(RoutingAlgorithm):
 
         while file_priorite:
             distance_actuelle, noeud_actuel = heapq.heappop(file_priorite)
+
+            if distance_actuelle > distances[noeud_actuel]:
+                continue
+
             if noeud_actuel == destination:
                 break
+
             for voisin, lien in self.graph.get_voisins(noeud_actuel):
                 distance = distance_actuelle + lien.latence
+
                 if distance < distances[voisin]:
                     distances[voisin] = distance
                     predecesseurs[voisin] = noeud_actuel
@@ -26,16 +32,21 @@ class DijkstraRouter(RoutingAlgorithm):
     def _reconstruire_chemin(self, predecesseurs, source, destination):
         chemin = []
         noeud = destination
+
         while noeud is not None:
             chemin.append(noeud)
             noeud = predecesseurs[noeud]
+
         chemin.reverse()
-        if chemin[0] == source:
+
+        if chemin and chemin[0] == source:
             return chemin
         return []
 
     def get_next_hop(self, source, destination):
         chemin = self.find_path(source, destination)
+
         if len(chemin) >= 2:
             return chemin[1]
+
         return None

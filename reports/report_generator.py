@@ -12,10 +12,8 @@ class ReportGenerator:
         stats = self.simulator.get_statistiques()
 
         rapport = f"""
-======================================
    RAPPORT DE SIMULATION RÉSEAU
    Date : {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}
-======================================
 
 STATISTIQUES GÉNÉRALES
 -----------------------
@@ -40,7 +38,6 @@ Latence moyenne     : {stats['latence_moyenne']} ms
             if lien.is_saturated():
                 rapport += f"  ⚠️  Lien {src} -> {dst} saturé !\n"
 
-        rapport += "======================================"
         return rapport
 
     def exporter_csv(self):
@@ -65,4 +62,4 @@ Latence moyenne     : {stats['latence_moyenne']} ms
                     " -> ".join(paquet.chemin) if paquet.chemin else "N/A"
                 ])
 
-        return nom_fichier
+        return nom_fichier  

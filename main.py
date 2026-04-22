@@ -8,9 +8,7 @@ from reports.report_generator import ReportGenerator
 
 def afficher_menu():
     """Affiche le menu principal."""
-    print("\n======================================")
     print("   ANALYSEUR DE TRAFIC RÉSEAU")
-    print("======================================")
     print("  1. Créer un réseau")
     print("  2. Lancer la simulation")
     print("  3. Afficher le rapport")
@@ -18,7 +16,6 @@ def afficher_menu():
     print("  5. Sauvegarder le réseau (JSON)")
     print("  6. Charger un réseau (JSON)")
     print("  0. Quitter")
-    print("======================================")
     return input("Votre choix : ")
 
 
