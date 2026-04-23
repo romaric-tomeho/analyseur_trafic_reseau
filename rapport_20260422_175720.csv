@@ -1,7 +1,0 @@
-packet_id,source,destination,taille,priorite,latence_totale,chemin
-PKT-0-0,PC1,PC2,100,1,7,S1 -> R1
-PKT-0-1,PC1,PC2,100,1,7,S1 -> R1
-PKT-0-2,PC1,PC2,100,1,7,S1 -> R1
-PKT-1-3,PC1,PC2,100,1,2,S1
-PKT-1-4,PC1,PC2,100,1,2,S1
-PKT-1-5,PC1,PC2,100,1,2,S1

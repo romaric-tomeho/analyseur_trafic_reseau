@@ -1,1 +1,25 @@
-venv/ 
+# Environnement virtuel
+venv/
+
+# Fichiers Python compilés
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Fichiers de configuration locaux
+*.env
+.env
+
+# Rapports générés
+*.csv
+*.txt
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
