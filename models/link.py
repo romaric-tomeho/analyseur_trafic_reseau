@@ -1,10 +1,12 @@
 class NetworkLink:
+
     def __init__(self, source, destination, bande_passante, latence):
         self.source = source
         self.destination = destination
         self.bande_passante = bande_passante
         self.latence = latence
         self.charge_actuelle = 0.0
+        self.charge_precedente = 0.0
         self.actif = True
 
     def is_saturated(self, seuil=0.8):
@@ -22,15 +24,18 @@ class NetworkLink:
         paquet.latence_totale += self.latence
         return True
 
-    def reset_charge(self):
-        self.charge_actuelle = 0.0
+    def get_utilisation(self):
+        if self.bande_passante == 0:
+            return 100.0
+        return round((self.charge_precedente / self.bande_passante) * 100, 2)
 
-    def get_status(self):
+    def status(self):
         return {
             "source": self.source,
             "destination": self.destination,
             "bande_passante": self.bande_passante,
             "latence": self.latence,
-            "charge_actuelle": self.charge_actuelle,
+            "charge_actuelle": self.charge_precedente,
+            "utilisation": self.get_utilisation(),
             "sature": self.is_saturated()
         }
