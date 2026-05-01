@@ -132,7 +132,7 @@ def main():
                 if destination not in graph.noeuds:
                     raise NoeudInexistantError(destination)
 
-                chemin = DijkstraRouter(graph).find_path(source, destination)
+                chemin = DijkstraRouter(graph).trouver_chemin(source, destination)
                 if not chemin:
                     raise CheminInexistantError(source, destination)
 
@@ -143,8 +143,8 @@ def main():
                     simulator.injecter_paquets(source, destination, nb_paquets)
                     simulator.executer_tick()
 
-                stats = simulator.get_statistiques()
-                goulots = simulator.get_goulots()
+                stats = simulator.obtenir_statistique()
+                goulots = simulator.obtenir_goulot()
                 sim_id = db.sauvegarder_simulation(stats, goulots)
                 print(f"\n✅ Simulation terminée ! (sauvegardée en base — ID #{sim_id})")
 

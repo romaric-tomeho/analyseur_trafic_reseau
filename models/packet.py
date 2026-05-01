@@ -15,7 +15,7 @@ class Packet:
         self.delivre = False
         self.raison_perte = None
 
-    def add_hop(self, node_id, latence=0):# Ajoute un saut (hop) au chemin du paquet et met à jour la latence totale
+    def ajout_saut(self, node_id, latence=0):# Ajoute un saut  au chemin du paquet et met à jour la latence totale
         self.chemin.append(node_id)
         self.latence_totale += latence
 
@@ -25,7 +25,7 @@ class Packet:
     def mark_perdu(self, raison):# Marque le paquet comme perdu et enregistre la raison de la perte
         self.raison_perte = raison
 
-    def get_info(self):# Retourne un dictionnaire avec les informations du paquet
+    def obtenir_info(self):# Retourne un dictionnaire avec les informations du paquet
         return {
             "packet_id": self.packet_id,
             "source": self.source,

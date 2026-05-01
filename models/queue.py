@@ -21,11 +21,11 @@ class PacketQueue:
             return None
         return self.queue.popleft()
 
-    def snapshot(self):# Retourne une liste de dictionnaires représentant les paquets dans la file d'attente
+    def retourne_liste(self):# Retourne une liste de dictionnaires représentant les paquets dans la file d'attente
         result = []
         for packet in self.queue:
             result.append(packet.to_dict())
         return result
 
-    def size(self):# Retourne le nombre de paquets dans la file d'attente
+    def size(self):
         return len(self.queue)

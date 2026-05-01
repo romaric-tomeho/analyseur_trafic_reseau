@@ -24,7 +24,7 @@ class NetworkLink:
         paquet.latence_totale += self.latence
         return True
 
-    def get_utilisation(self):# Retourne l'utilisation du lien en pourcentage
+    def obtenir_utilisation(self):# Retourne l'utilisation du lien en pourcentage
         if self.bande_passante == 0:
             return 100.0
         return round((self.charge_precedente / self.bande_passante) * 100, 2)
@@ -36,6 +36,6 @@ class NetworkLink:
             "bande_passante": self.bande_passante,
             "latence": self.latence,
             "charge_actuelle": self.charge_precedente,
-            "utilisation": self.get_utilisation(),
+            "utilisation": self.obtenir_utilisation(),
             "sature": self.is_saturated()
         }

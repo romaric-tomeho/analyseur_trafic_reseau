@@ -275,7 +275,7 @@ class AnalyseurApp:
                 raise NoeudInexistantError(destination)
 
             self.router = DijkstraRouter(self.graph)
-            chemin = self.router.find_path(source, destination)
+            chemin = self.router.trouver_chemin(source, destination)
             if not chemin:
                 raise CheminInexistantError(source, destination)
 
@@ -286,8 +286,8 @@ class AnalyseurApp:
                 self.simulator.injecter_paquets(source, destination, nb_paquets)
                 self.simulator.executer_tick()
 
-            stats = self.simulator.get_statistiques()
-            goulots = self.simulator.get_goulots()
+            stats = self.simulator.obtenir_statistique()
+            goulots = self.simulator.obtenir_goulot()
             sim_id = self.db.sauvegarder_simulation(stats, goulots)
 
             self.zone_rapport.delete("1.0", "end")

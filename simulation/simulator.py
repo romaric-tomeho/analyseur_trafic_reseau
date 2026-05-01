@@ -52,7 +52,7 @@ class Simulator:
             paquet.mark_delivre()
             return
 
-        prochain = self.router.get_next_hop(noeud_actuel, paquet.destination)
+        prochain = self.router.ajout_prochain_saut(noeud_actuel, paquet.destination)
 
         if prochain is None:
             self.statistiques["paquets_perdus"] += 1
@@ -73,11 +73,11 @@ class Simulator:
 
         charge_paquet = (paquet.taille * 8) / 1_000_000
         lien.charge_actuelle += charge_paquet
-        paquet.add_hop(prochain, lien.latence)
+        paquet.ajout_saut(prochain, lien.latence)
         self.statistiques["latence_totale"] += lien.latence
         self.graph.noeuds[prochain].file_attente.append(paquet)
 
-    def get_statistiques(self):# Calcule et retourne les statistiques de la simulation, y compris le taux de perte et la latence moyenne
+    def obtenir_statistique(self):# Calcule et retourne les statistiques de la simulation, y compris le taux de perte et la latence moyenne
         envoyes = self.statistiques["paquets_envoyes"]
         perdus = self.statistiques["paquets_perdus"]
         livres = self.statistiques["paquets_livres"]
@@ -94,10 +94,10 @@ class Simulator:
             "latence_moyenne": round((latence / envoyes), 2) if envoyes > 0 else 0
         }
 
-    def get_goulots(self):# Identifie les goulots d'étranglement en fonction de leur utilisation et retourne une liste de ces liens avec leurs détails
+    def obtenir_goulot(self):# Identifie les goulots d'étranglement en fonction de leur utilisation et retourne une liste de ces liens avec leurs détails
         goulots = []
         for (src, dst), lien in self.graph.liens.items():
-            utilisation = lien.get_utilisation()
+            utilisation = lien.obtenir_utilisation()
             if utilisation >= 80:
                 goulots.append({
                     "source": src,

@@ -4,7 +4,7 @@ from routing.base import RoutingAlgorithm
 
 class DijkstraRouter(RoutingAlgorithm):
 
-    def find_path(self, source, destination):# Implémentation de l'algorithme de Dijkstra pour trouver le chemin le plus court entre la source et la destination
+    def trouver_chemin(self, source, destination):# Implémentation de l'algorithme de Dijkstra pour trouver le chemin le plus court entre la source et la destination
         distances = {node_id: float('inf') for node_id in self.graph.noeuds}
         distances[source] = 0
         predecesseurs = {node_id: None for node_id in self.graph.noeuds}
@@ -43,8 +43,8 @@ class DijkstraRouter(RoutingAlgorithm):
             return chemin
         return []
 
-    def get_next_hop(self, source, destination):# Retourne le prochain saut sur le chemin entre la source et la destination
-        chemin = self.find_path(source, destination)
+    def ajout_prochain_saut(self, source, destination):# Retourne le prochain saut sur le chemin entre la source et la destination
+        chemin = self.trouver_chemin(source, destination)
 
         if len(chemin) >= 2:
             return chemin[1]

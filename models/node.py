@@ -11,11 +11,11 @@ class NetworkNode(ABC):
         self.file_attente = deque()
 
     @abstractmethod
-    def process_packet(self, packet):
+    def traiter_packet(self, packet):
         pass
 
     @abstractmethod
-    def get_status(self):
+    def obtenir_status(self):
         pass
 
 
@@ -24,11 +24,11 @@ class Router(NetworkNode):
         super().__init__(node_id, "router", capacite)
         self.table_routage = {}
 
-    def process_packet(self, packet):
+    def traiter_packet(self, packet):
         if self.etat:
             self.file_attente.append(packet)
 
-    def get_status(self):
+    def obtenir_status(self):
         return {
             "node_id": self.node_id,
             "type": self.node_type,
@@ -43,11 +43,11 @@ class Switch(NetworkNode):
         super().__init__(node_id, "switch", capacite)
         self.table_commutation = {}
 
-    def process_packet(self, packet):
+    def traiter_packet(self, packet):
         if self.etat:
             self.file_attente.append(packet)
 
-    def get_status(self):
+    def obtenir_status(self):
         return {
             "node_id": self.node_id,
             "type": self.node_type,
@@ -63,11 +63,11 @@ class Host(NetworkNode):
         self.paquets_envoyes = []
         self.paquets_recus = []
 
-    def process_packet(self, packet):
+    def traiter_packet(self, packet):
         if self.etat:
             self.paquets_recus.append(packet)
 
-    def get_status(self):
+    def obtenir_status(self):
         return {
             "node_id": self.node_id,
             "type": self.node_type,

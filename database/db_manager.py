@@ -8,11 +8,11 @@ class DatabaseManager:
         self.db_path = db_path
         self._initialiser_base()
 
-    def _get_connexion(self):# Retourne une connexion à la base de données SQLite
+    def _obtenir_connexion(self):# Retourne une connexion à la base de données SQLite
         return sqlite3.connect(self.db_path)
 
     def _initialiser_base(self):# Crée les tables nécessaires dans la base de données si elles n'existent pas déjà
-        with self._get_connexion() as conn:
+        with self._obtenir_connexion() as conn:
             curseur = conn.cursor()
             curseur.execute("""
                 CREATE TABLE IF NOT EXISTS simulations (
@@ -40,7 +40,7 @@ class DatabaseManager:
             conn.commit()
 
     def sauvegarder_simulation(self, stats, goulots):# Sauvegarde les statistiques de la simulation et les goulots d'étranglement dans la base de données, retourne l'ID de la simulation sauvegardée
-        with self._get_connexion() as conn:
+        with self._obtenir_connexion() as conn:
             curseur = conn.cursor()
             curseur.execute("""
                 INSERT INTO simulations
@@ -73,8 +73,8 @@ class DatabaseManager:
             conn.commit()
             return simulation_id
 
-    def get_historique(self):# Récupère l'historique des simulations sauvegardées dans la base de données, retourne une liste de tuples avec les détails de chaque simulation
-        with self._get_connexion() as conn:
+    def obtenir_historique(self):# Récupère l'historique des simulations sauvegardées dans la base de données, retourne une liste de tuples avec les détails de chaque simulation
+        with self._obtenir_connexion() as conn:
             curseur = conn.cursor()
             curseur.execute("""
                 SELECT id, date, ticks, paquets_envoyes,
@@ -84,8 +84,8 @@ class DatabaseManager:
             """)
             return curseur.fetchall()
 
-    def get_simulation(self, simulation_id):# Récupère les détails d'une simulation spécifique et ses goulots d'étranglement à partir de la base de données, retourne un tuple avec les données de la simulation et une liste de goulots
-        with self._get_connexion() as conn:
+    def obtenir_simulation(self, simulation_id):# Récupère les détails d'une simulation spécifique et ses goulots d'étranglement à partir de la base de données, retourne un tuple avec les données de la simulation et une liste de goulots
+        with self._obtenir_connexion() as conn:
             curseur = conn.cursor()
             curseur.execute("""
                 SELECT * FROM simulations WHERE id = ?
@@ -101,7 +101,7 @@ class DatabaseManager:
             return simulation, goulots
 
     def afficher_historique(self):# Affiche l'historique des simulations sauvegardées dans la base de données sous forme de texte formaté
-        historique = self.get_historique()
+        historique = self.obtenir_historique()
         if not historique:
             return "\n  Aucune simulation sauvegardée."
 

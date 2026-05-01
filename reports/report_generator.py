@@ -8,9 +8,9 @@ class ReportGenerator:
         self.simulator = simulator
         self.horodatage = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    def generer_rapport_texte(self):# Génère un rapport texte détaillé de la simulation
-        stats = self.simulator.get_statistiques()
-        goulots = self.simulator.get_goulots()
+    def generer_rapport_texte(self):#
+        stats = self.simulator.obtenir_statistique()
+        goulots = self.simulator.obtenir_goulot()
 
         rapport = f"""
 ======================================
@@ -38,7 +38,7 @@ Latence moyenne     : {stats['latence_moyenne']} ms
 
         rapport += "\n\nÉTAT DES LIENS\n-----------------------"
         for (src, dst), lien in self.simulator.graph.liens.items():
-            utilisation = lien.get_utilisation()
+            utilisation = lien.obtenir_utilisation()
             rapport += f"\n  {src} → {dst}"
             rapport += f" | Bande passante : {lien.bande_passante} Mbps"
             rapport += f" | Charge : {lien.charge_precedente:.4f} Mbps"
