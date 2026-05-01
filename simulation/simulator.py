@@ -16,7 +16,7 @@ class Simulator:
             "latence_totale": 0
         }
 
-    def generer_paquet(self, source, destination, taille=100, priorite=1):
+    def generer_paquet(self, source, destination, taille=100, priorite=1):# Génère un paquet avec un ID unique basé sur le tick actuel et le nombre de paquets déjà générés
         packet_id = f"PKT-{self.tick_actuel}-{len(self.paquets)}"
         paquet = Packet(packet_id, source, destination, taille, priorite)
         self.paquets.append(paquet)
@@ -29,7 +29,7 @@ class Simulator:
             if source in self.graph.noeuds:
                 self.graph.noeuds[source].file_attente.append(paquet)
 
-    def executer_tick(self):
+    def executer_tick(self):# Exécute un tick de simulation, traitant les paquets dans les files d'attente des nœuds et mettant à jour les statistiques
         self.tick_actuel += 1
 
         for lien in self.graph.liens.values():
@@ -46,7 +46,7 @@ class Simulator:
         for lien in self.graph.liens.values():
             lien.charge_precedente = lien.charge_actuelle
 
-    def _router_paquet(self, paquet, noeud_actuel):
+    def _router_paquet(self, paquet, noeud_actuel):# Route le paquet à partir du nœud actuel en utilisant l'algorithme de routage, met à jour les statistiques en fonction du résultat du routage
         if noeud_actuel == paquet.destination:
             self.statistiques["paquets_livres"] += 1
             paquet.mark_delivre()
@@ -77,7 +77,7 @@ class Simulator:
         self.statistiques["latence_totale"] += lien.latence
         self.graph.noeuds[prochain].file_attente.append(paquet)
 
-    def get_statistiques(self):
+    def get_statistiques(self):# Calcule et retourne les statistiques de la simulation, y compris le taux de perte et la latence moyenne
         envoyes = self.statistiques["paquets_envoyes"]
         perdus = self.statistiques["paquets_perdus"]
         livres = self.statistiques["paquets_livres"]
@@ -94,7 +94,7 @@ class Simulator:
             "latence_moyenne": round((latence / envoyes), 2) if envoyes > 0 else 0
         }
 
-    def get_goulots(self):
+    def get_goulots(self):# Identifie les goulots d'étranglement en fonction de leur utilisation et retourne une liste de ces liens avec leurs détails
         goulots = []
         for (src, dst), lien in self.graph.liens.items():
             utilisation = lien.get_utilisation()

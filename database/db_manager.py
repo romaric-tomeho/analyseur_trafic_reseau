@@ -8,10 +8,10 @@ class DatabaseManager:
         self.db_path = db_path
         self._initialiser_base()
 
-    def _get_connexion(self):
+    def _get_connexion(self):# Retourne une connexion à la base de données SQLite
         return sqlite3.connect(self.db_path)
 
-    def _initialiser_base(self):
+    def _initialiser_base(self):# Crée les tables nécessaires dans la base de données si elles n'existent pas déjà
         with self._get_connexion() as conn:
             curseur = conn.cursor()
             curseur.execute("""
@@ -39,7 +39,7 @@ class DatabaseManager:
             """)
             conn.commit()
 
-    def sauvegarder_simulation(self, stats, goulots):
+    def sauvegarder_simulation(self, stats, goulots):# Sauvegarde les statistiques de la simulation et les goulots d'étranglement dans la base de données, retourne l'ID de la simulation sauvegardée
         with self._get_connexion() as conn:
             curseur = conn.cursor()
             curseur.execute("""
@@ -73,7 +73,7 @@ class DatabaseManager:
             conn.commit()
             return simulation_id
 
-    def get_historique(self):
+    def get_historique(self):# Récupère l'historique des simulations sauvegardées dans la base de données, retourne une liste de tuples avec les détails de chaque simulation
         with self._get_connexion() as conn:
             curseur = conn.cursor()
             curseur.execute("""
@@ -84,7 +84,7 @@ class DatabaseManager:
             """)
             return curseur.fetchall()
 
-    def get_simulation(self, simulation_id):
+    def get_simulation(self, simulation_id):# Récupère les détails d'une simulation spécifique et ses goulots d'étranglement à partir de la base de données, retourne un tuple avec les données de la simulation et une liste de goulots
         with self._get_connexion() as conn:
             curseur = conn.cursor()
             curseur.execute("""
@@ -100,7 +100,7 @@ class DatabaseManager:
 
             return simulation, goulots
 
-    def afficher_historique(self):
+    def afficher_historique(self):# Affiche l'historique des simulations sauvegardées dans la base de données sous forme de texte formaté
         historique = self.get_historique()
         if not historique:
             return "\n  Aucune simulation sauvegardée."

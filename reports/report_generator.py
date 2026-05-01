@@ -8,7 +8,7 @@ class ReportGenerator:
         self.simulator = simulator
         self.horodatage = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    def generer_rapport_texte(self):
+    def generer_rapport_texte(self):# Génère un rapport texte détaillé de la simulation
         stats = self.simulator.get_statistiques()
         goulots = self.simulator.get_goulots()
 
@@ -31,7 +31,7 @@ Latence moyenne     : {stats['latence_moyenne']} ms
 ÉTAT DES NŒUDS
 -----------------------"""
 
-        for noeud in self.simulator.graph.noeuds.values():
+        for noeud in self.simulator.graph.noeuds.values():# Affiche l'état de chaque nœud du réseau
             rapport += f"\n  [{noeud.node_type.upper()}] {noeud.node_id}"
             rapport += f" - etat : {'Actif' if noeud.etat else 'Inactif'}"
             rapport += f" - file attente : {len(noeud.file_attente)} paquets"
@@ -56,7 +56,7 @@ Latence moyenne     : {stats['latence_moyenne']} ms
         rapport += "\n======================================"
         return rapport
 
-    def exporter_csv(self):
+    def exporter_csv(self):# Exporte les données de simulation dans un fichier CSV
         nom_fichier = f"rapport_{self.horodatage}.csv"
         with open(nom_fichier, "w", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)

@@ -1,73 +1,31 @@
-from __future__ import annotations
-import heapq
 from collections import deque
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from models.packet import Packet
-
 
 class PacketQueue:
 
-    def __init__(self, max_size: int = 10, mode: str = "fifo") -> None:
-        if mode not in {"fifo", "priority"}:
-            raise ValueError("mode must be 'fifo' or 'priority'")
+    def __init__(self, max_size=10, mode="fifo"):
+        self.max_size = max_size
+        self.mode = mode
+        self.lost_packets = 0
+        self.queue = deque()
 
-        self._max_size = max_size
-        self._mode = mode
-        self._lost_packets = 0
-
-        self._fifo_queue: deque[Packet] = deque()
-        self._priority_queue: list[tuple[int, int, Packet]] = []
-
-        self._sequence = 0
-
-    @property
-    def lost_packets(self) -> int:
-        return self._lost_packets
-
-    @property
-    def mode(self) -> str:
-        return self._mode
-
-    @property
-    def max_size(self) -> int:
-        return self._max_size
-
-    def enqueue(self, packet: "Packet") -> bool:
-        if len(self) >= self._max_size:
-            self._lost_packets += 1
-            packet.mark_dropped("queue_overflow")
+    def enqueue(self, packet):# Retourne True si le paquet a été ajouté, False si la file est pleine (perte de paquet)
+        if len(self.queue) >= self.max_size:
+            self.lost_packets += 1
             return False
 
-        if self._mode == "fifo":
-            self._fifo_queue.append(packet)
-        else:
-            heapq.heappush(
-                self._priority_queue,
-                (-packet.priority, self._sequence, packet)
-            )
-            self._sequence += 1
-
+        self.queue.append(packet)
         return True
 
-    def dequeue(self) -> "Packet | None":
-        if self._mode == "fifo":
-            return self._fifo_queue.popleft() if self._fifo_queue else None
-
-        if not self._priority_queue:
+    def dequeue(self):# Retourne le paquet suivant selon le mode de la file (FIFO ou LIFO), ou None si la file est vide
+        if len(self.queue) == 0:
             return None
+        return self.queue.popleft()
 
-        return heapq.heappop(self._priority_queue)[2]
+    def snapshot(self):# Retourne une liste de dictionnaires représentant les paquets dans la file d'attente
+        result = []
+        for packet in self.queue:
+            result.append(packet.to_dict())
+        return result
 
-    def snapshot(self) -> list[dict[str, object]]:
-        if self._mode == "fifo":
-            return [packet.to_dict() for packet in self._fifo_queue]
-
-        return [item[2].to_dict() for item in sorted(self._priority_queue)]
-
-    def __len__(self) -> int:
-        if self._mode == "fifo":
-            return len(self._fifo_queue)
-
-        return len(self._priority_queue)
+    def size(self):# Retourne le nombre de paquets dans la file d'attente
+        return len(self.queue)
