@@ -18,6 +18,7 @@ class NetworkGraph:
 
     def ajouter_lien(self, lien):
         self.liens[(lien.source, lien.destination)] = lien
+        self.liens[(lien.destination, lien.source)] = lien
 
     def supprimer_lien(self, source, destination):
         if (source, destination) in self.liens:

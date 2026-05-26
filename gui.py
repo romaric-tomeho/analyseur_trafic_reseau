@@ -42,10 +42,34 @@ class AnalyseurApp:
         frame_main = tk.Frame(self.root, bg="#1e1e2e")
         frame_main.pack(fill="both", expand=True, padx=10, pady=5)
 
-        # Panneau gauche — Contrôles
-        frame_gauche = tk.Frame(frame_main, bg="#313244", width=280)
-        frame_gauche.pack(side="left", fill="y", padx=(0, 5))
-        frame_gauche.pack_propagate(False)
+        # Panneau gauche — Contrôles avec scrollbar
+        frame_gauche_outer = tk.Frame(frame_main, bg="#313244", width=280)
+        frame_gauche_outer.pack(side="left", fill="y", padx=(0, 5))
+        frame_gauche_outer.pack_propagate(False)
+
+        canvas_gauche = tk.Canvas(frame_gauche_outer, bg="#313244", highlightthickness=0)
+        scrollbar_gauche = tk.Scrollbar(frame_gauche_outer, orient="vertical", command=canvas_gauche.yview)
+        canvas_gauche.configure(yscrollcommand=scrollbar_gauche.set)
+
+        scrollbar_gauche.pack(side="right", fill="y")
+        canvas_gauche.pack(side="left", fill="both", expand=True)
+
+        # Frame intérieure qui contiendra tous les widgets
+        frame_gauche = tk.Frame(canvas_gauche, bg="#313244")
+        canvas_window = canvas_gauche.create_window((0, 0), window=frame_gauche, anchor="nw")
+
+        def _on_frame_configure(event):
+            canvas_gauche.configure(scrollregion=canvas_gauche.bbox("all"))
+
+        def _on_canvas_configure(event):
+            canvas_gauche.itemconfig(canvas_window, width=event.width)
+
+        def _on_mousewheel(event):
+            canvas_gauche.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+        frame_gauche.bind("<Configure>", _on_frame_configure)
+        canvas_gauche.bind("<Configure>", _on_canvas_configure)
+        canvas_gauche.bind_all("<MouseWheel>", _on_mousewheel)
 
         tk.Label(
             frame_gauche, text="RÉSEAU",
@@ -112,6 +136,38 @@ class AnalyseurApp:
             command=self._ajouter_lien,
             bg="#a6e3a1", fg="#1e1e2e", font=("Courier", 9, "bold")
         ).grid(row=4, column=0, columnspan=2, pady=5)
+
+        # Suppression nœud / lien
+        frame_suppr = tk.LabelFrame(
+            frame_gauche, text="Supprimer",
+            bg="#313244", fg="#cdd6f4",
+            font=("Courier", 9)
+        )
+        frame_suppr.pack(fill="x", padx=8, pady=5)
+
+        tk.Label(frame_suppr, text="ID nœud :", bg="#313244", fg="#cdd6f4").grid(row=0, column=0, sticky="w", padx=5)
+        self.entry_suppr_noeud = tk.Entry(frame_suppr, width=10, bg="#45475a", fg="#cdd6f4", insertbackground="white")
+        self.entry_suppr_noeud.grid(row=0, column=1, padx=5, pady=2)
+
+        tk.Button(
+            frame_suppr, text="🗑 Supprimer nœud",
+            command=self._supprimer_noeud,
+            bg="#f38ba8", fg="#1e1e2e", font=("Courier", 9, "bold")
+        ).grid(row=1, column=0, columnspan=2, pady=3)
+
+        tk.Label(frame_suppr, text="Source :", bg="#313244", fg="#cdd6f4").grid(row=2, column=0, sticky="w", padx=5)
+        self.entry_suppr_source = tk.Entry(frame_suppr, width=10, bg="#45475a", fg="#cdd6f4", insertbackground="white")
+        self.entry_suppr_source.grid(row=2, column=1, padx=5, pady=2)
+
+        tk.Label(frame_suppr, text="Destination :", bg="#313244", fg="#cdd6f4").grid(row=3, column=0, sticky="w", padx=5)
+        self.entry_suppr_dest = tk.Entry(frame_suppr, width=10, bg="#45475a", fg="#cdd6f4", insertbackground="white")
+        self.entry_suppr_dest.grid(row=3, column=1, padx=5, pady=2)
+
+        tk.Button(
+            frame_suppr, text="🗑 Supprimer lien",
+            command=self._supprimer_lien,
+            bg="#f38ba8", fg="#1e1e2e", font=("Courier", 9, "bold")
+        ).grid(row=4, column=0, columnspan=2, pady=3)
 
         # Simulation
         tk.Label(
@@ -187,7 +243,6 @@ class AnalyseurApp:
         frame_droite = tk.Frame(frame_main, bg="#1e1e2e")
         frame_droite.pack(side="right", fill="both", expand=True)
 
-        # Zone rapport
         tk.Label(
             frame_droite, text="RAPPORT",
             font=("Courier", 11, "bold"),
@@ -258,6 +313,44 @@ class AnalyseurApp:
             messagebox.showerror("Erreur", str(e))
         except ValueError as e:
             messagebox.showerror("Erreur", str(e))
+
+    def _supprimer_noeud(self):
+        node_id = self.entry_suppr_noeud.get().strip()
+        if not node_id:
+            messagebox.showerror("Erreur", "Entrez un identifiant de nœud.")
+            return
+        if node_id not in self.graph.noeuds:
+            messagebox.showerror("Erreur", f"Nœud '{node_id}' introuvable.")
+            return
+
+        liens_a_supprimer = [k for k in self.graph.liens if k[0] == node_id or k[1] == node_id]
+        for k in liens_a_supprimer:
+            del self.graph.liens[k]
+
+        del self.graph.noeuds[node_id]
+        self._log(f"🗑 Nœud '{node_id}' et ses liens supprimés.")
+        self.entry_suppr_noeud.delete(0, "end")
+
+    def _supprimer_lien(self):
+        source = self.entry_suppr_source.get().strip()
+        dest = self.entry_suppr_dest.get().strip()
+        if not source or not dest:
+            messagebox.showerror("Erreur", "Entrez source et destination.")
+            return
+
+        supprime = False
+        for cle in [(source, dest), (dest, source)]:
+            if cle in self.graph.liens:
+                del self.graph.liens[cle]
+                supprime = True
+
+        if supprime:
+            self._log(f"🗑 Lien {source} ↔ {dest} supprimé.")
+        else:
+            messagebox.showerror("Erreur", f"Aucun lien entre '{source}' et '{dest}'.")
+
+        self.entry_suppr_source.delete(0, "end")
+        self.entry_suppr_dest.delete(0, "end")
 
     def _lancer_simulation(self):
         try:
